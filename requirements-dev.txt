@@ -1,0 +1,5 @@
+# Only needed to run the tests
+-r requirements.txt
+pytest==9.1.1
+# Temporary migration reader for the existing Chroma directory; remove after cutover.
+chromadb>=1.0,<2
