@@ -1,25 +1,40 @@
+# Environment variables and secrets
 .env
+.env.*
+!.env.example
+
+# Python
 .venv/
 venv/
 __pycache__/
 *.py[cod]
+
+# Test and tooling caches
 .pytest_cache/
+.pytest-tmp/
+.test-tmp/
 .mypy_cache/
 .ruff_cache/
 .uv-cache/
-.DS_Store
-.env
-.env.*
-!.env.example
-*.log
+
+# Local application data
 data/uploads/*
 data/chroma/*
 !data/uploads/.gitkeep
 !data/chroma/.gitkeep
-
 data/app.db
 data/app.db-*
 data/migration-backups/
-node_modules/
 
+# Frontend dependencies and generated files
+node_modules/
+dist/
+build/
+
+# Logs and archives
+*.log
 *.zip
+
+# Operating system files
+.DS_Store
+Thumbs.db
