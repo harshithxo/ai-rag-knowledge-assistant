@@ -84,7 +84,8 @@ def generate(messages: Sequence[BaseMessage], temperature: float | None = None,
              max_tokens: int | None = None) -> str:
     """Call the LLM and return the full reply as text."""
     try:
-        return str(get_llm(temperature, max_tokens).invoke(list(messages)).content).strip()
+        content = get_llm(temperature, max_tokens).invoke(list(messages)).content
+        return _content_to_text(content).strip()
     except Exception as exc:
         logger.warning("LLM call failed: %s", exc)
         raise translate_error(exc) from exc
@@ -107,7 +108,7 @@ def stream(messages: Sequence[BaseMessage], temperature: float | None = None,
                         meta["eval_count"] / (meta["eval_duration"] / 1e9), 1
                     )
 
-            content = chunk.content if isinstance(chunk.content, str) else str(chunk.content or "")
+            content = _content_to_text(chunk.content)
             if content:
                 chunks += 1
                 yield content
@@ -129,3 +130,20 @@ def warm_up() -> None:
         logger.info("Chat model '%s' is loaded and ready", settings.llm_model)
     except Exception as exc:
         logger.info("Model warm-up skipped (%s)", exc)
+
+def _content_to_text(content: Any) -> str:
+    if isinstance(content, str):
+        return content
+
+    if isinstance(content, list):
+        parts = []
+        for block in content:
+            if isinstance(block, dict):
+                text = block.get("text")
+                if text:
+                    parts.append(str(text))
+            elif isinstance(block, str):
+                parts.append(block)
+        return "".join(parts)
+
+    return str(content or "")
